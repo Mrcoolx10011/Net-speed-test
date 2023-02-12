@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#speed-meter {
+  width: 500px;
+  height: 20px;
+  border: 1px solid gray;
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+#speed-meter-fill {
+  height: 100%;
+  background-color: green;
+  width: 0%;
+  transition: width 0.5s ease-out;
+}
+
+#results {
+  display: none;
+}
+
+    </style>
+<head>
+  <meta charset="UTF-8">
+  <title>Net Speed Test</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1>Net Speed Test</h1>
+  <p>Click the button to start the test:</p>
+  <button id="start-test-btn">Start Test</button>
+  <br><br>
+  <div id="speed-meter">
+    <div id="speed-meter-fill"></div>
+  </div>
+  <br><br>
+  <div id="results">
+    <p id="download-speed">Download speed:</p>
+    <p id="upload-speed">Upload speed:</p>
+  </div>
+  <script >
+    const startBtn = document.getElementById("start-test-btn");
+const speedMeter = document.getElementById("speed-meter");
+const speedMeterFill = document.getElementById("speed-meter-fill");
+const resultsDiv = document.getElementById("results");
+const downloadSpeedP = document.getElementById("download-speed");
+const uploadSpeedP = document.getElementById("upload-speed");
+
+startBtn.addEventListener("click", function() {
+  startBtn.style.display = "none";
+  speedMeter.style.display = "block";
+  
+  // Implement the logic to test the net speed here
+  let downloadSize = 10000000; // 10 MB
+  let startTime = performance.now();
+  let xhr = new XMLHttpRequest();
+  xhr.open("GET", `test-file.bin?t=${startTime}`, true);
+  xhr.responseType = "arraybuffer";
+  xhr.onprogress = function(event) {
+    if (event.lengthComputable) {
+      let percentage = (event.loaded / downloadSize) * 100;
+      speedMeterFill.style.width = `${percentage}%`;
+    }
+  };
+  xhr.onload = function() {
+    let endTime = performance.now();
+    let duration = (endTime - startTime) / 1000; // in seconds
+    let downloadSpeed = (downloadSize / 1000000) / duration; // in Mbps
+    downloadSpeedP.innerHTML = `Download speed: ${downloadSpeed.toFixed(2)} Mbps`;
+    resultsDiv.style.display = "block";
+  };
+  
+  
+  xhr.send();
+});
+
+
+
+
+  </script>
+</body>
+</html>
